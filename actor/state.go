@@ -91,10 +91,11 @@ func maintainStream(stop chan struct{}) {
 				time.Sleep(2 * time.Second) // backoff before retrying
 				continue
 			}
-			log.Println("Update stream successfully established.")
-		}
+			log.Println("Server for Update stream is up!")
 
 		time.Sleep(1 * time.Second)
+	}
+
 	}
 }
 

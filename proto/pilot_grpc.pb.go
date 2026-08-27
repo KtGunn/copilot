@@ -34,7 +34,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AsyncClient interface {
 	StatusUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Status, empty.Empty], error)
-	EmergencyUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Status, empty.Empty], error)
+	EmergencyUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Emergency, empty.Empty], error)
 }
 
 type asyncClient struct {
@@ -58,25 +58,25 @@ func (c *asyncClient) StatusUpdate(ctx context.Context, opts ...grpc.CallOption)
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Async_StatusUpdateClient = grpc.ClientStreamingClient[Status, empty.Empty]
 
-func (c *asyncClient) EmergencyUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Status, empty.Empty], error) {
+func (c *asyncClient) EmergencyUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Emergency, empty.Empty], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &Async_ServiceDesc.Streams[1], Async_EmergencyUpdate_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[Status, empty.Empty]{ClientStream: stream}
+	x := &grpc.GenericClientStream[Emergency, empty.Empty]{ClientStream: stream}
 	return x, nil
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Async_EmergencyUpdateClient = grpc.ClientStreamingClient[Status, empty.Empty]
+type Async_EmergencyUpdateClient = grpc.ClientStreamingClient[Emergency, empty.Empty]
 
 // AsyncServer is the server API for Async service.
 // All implementations must embed UnimplementedAsyncServer
 // for forward compatibility.
 type AsyncServer interface {
 	StatusUpdate(grpc.ClientStreamingServer[Status, empty.Empty]) error
-	EmergencyUpdate(grpc.ClientStreamingServer[Status, empty.Empty]) error
+	EmergencyUpdate(grpc.ClientStreamingServer[Emergency, empty.Empty]) error
 	mustEmbedUnimplementedAsyncServer()
 }
 
@@ -90,7 +90,7 @@ type UnimplementedAsyncServer struct{}
 func (UnimplementedAsyncServer) StatusUpdate(grpc.ClientStreamingServer[Status, empty.Empty]) error {
 	return status.Errorf(codes.Unimplemented, "method StatusUpdate not implemented")
 }
-func (UnimplementedAsyncServer) EmergencyUpdate(grpc.ClientStreamingServer[Status, empty.Empty]) error {
+func (UnimplementedAsyncServer) EmergencyUpdate(grpc.ClientStreamingServer[Emergency, empty.Empty]) error {
 	return status.Errorf(codes.Unimplemented, "method EmergencyUpdate not implemented")
 }
 func (UnimplementedAsyncServer) mustEmbedUnimplementedAsyncServer() {}
@@ -122,11 +122,11 @@ func _Async_StatusUpdate_Handler(srv interface{}, stream grpc.ServerStream) erro
 type Async_StatusUpdateServer = grpc.ClientStreamingServer[Status, empty.Empty]
 
 func _Async_EmergencyUpdate_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(AsyncServer).EmergencyUpdate(&grpc.GenericServerStream[Status, empty.Empty]{ServerStream: stream})
+	return srv.(AsyncServer).EmergencyUpdate(&grpc.GenericServerStream[Emergency, empty.Empty]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Async_EmergencyUpdateServer = grpc.ClientStreamingServer[Status, empty.Empty]
+type Async_EmergencyUpdateServer = grpc.ClientStreamingServer[Emergency, empty.Empty]
 
 // Async_ServiceDesc is the grpc.ServiceDesc for Async service.
 // It's only intended for direct use with grpc.RegisterService,
