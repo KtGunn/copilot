@@ -10,6 +10,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 // /////////////////////////////////////////////////////////////
@@ -124,6 +125,9 @@ func CreateStateClient(host string, port int, options []grpc.DialOption) (*State
 
 	client := pb.NewAsyncClient(conn)
 	context, cancel := context.WithCancel(context.Background())
+
+	md := metadata.Pairs("client-id", "user")
+	context = metadata.NewOutgoingContext(context, md)
 
 	return &StateClientData{
 		client:       client,
