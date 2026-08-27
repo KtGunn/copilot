@@ -1,0 +1,37 @@
+//
+// August 13 2026
+// Copilot creatin a mockup status reporting system
+//
+
+syntax = "proto3";
+package sandbox;
+
+import  "google/protobuf/empty.proto";
+option go_package = "coptest/proto";
+
+
+enum MyStatus {
+     IMOK     = 0;
+     NOTOK    = 1;
+}
+
+message Status {
+        MyStatus State = 1;
+}
+
+
+enum MyEmergency {
+     FIRE    = 0;
+     EVAC    = 1;
+     ALLOK   = 2;
+}
+
+message Emergency {
+        MyEmergency Wassup = 1;
+}
+
+
+service Async {
+         rpc StatusUpdate(stream Status) returns (google.protobuf.Empty);
+         rpc EmergencyUpdate(stream Status) returns (google.protobuf.Empty);
+}
