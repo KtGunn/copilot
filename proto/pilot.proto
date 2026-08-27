@@ -33,5 +33,5 @@ message Emergency {
 
 service Async {
          rpc StatusUpdate(stream Status) returns (google.protobuf.Empty);
-         rpc EmergencyUpdate(stream Status) returns (google.protobuf.Empty);
+         rpc EmergencyUpdate(stream Emergency) returns (google.protobuf.Empty);
 }

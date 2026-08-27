@@ -225,10 +225,10 @@ const file_pilot_proto_rawDesc = "" +
 	"\vMyEmergency\x12\b\n" +
 	"\x04FIRE\x10\x00\x12\b\n" +
 	"\x04EVAC\x10\x01\x12\t\n" +
-	"\x05ALLOK\x10\x022\x80\x01\n" +
+	"\x05ALLOK\x10\x022\x83\x01\n" +
 	"\x05Async\x129\n" +
-	"\fStatusUpdate\x12\x0f.sandbox.Status\x1a\x16.google.protobuf.Empty(\x01\x12<\n" +
-	"\x0fEmergencyUpdate\x12\x0f.sandbox.Status\x1a\x16.google.protobuf.Empty(\x01B\x0fZ\rcoptest/protob\x06proto3"
+	"\fStatusUpdate\x12\x0f.sandbox.Status\x1a\x16.google.protobuf.Empty(\x01\x12?\n" +
+	"\x0fEmergencyUpdate\x12\x12.sandbox.Emergency\x1a\x16.google.protobuf.Empty(\x01B\x0fZ\rcoptest/protob\x06proto3"
 
 var (
 	file_pilot_proto_rawDescOnce sync.Once
@@ -255,7 +255,7 @@ var file_pilot_proto_depIdxs = []int32{
 	0, // 0: sandbox.Status.State:type_name -> sandbox.MyStatus
 	1, // 1: sandbox.Emergency.Wassup:type_name -> sandbox.MyEmergency
 	2, // 2: sandbox.Async.StatusUpdate:input_type -> sandbox.Status
-	2, // 3: sandbox.Async.EmergencyUpdate:input_type -> sandbox.Status
+	3, // 3: sandbox.Async.EmergencyUpdate:input_type -> sandbox.Emergency
 	4, // 4: sandbox.Async.StatusUpdate:output_type -> google.protobuf.Empty
 	4, // 5: sandbox.Async.EmergencyUpdate:output_type -> google.protobuf.Empty
 	4, // [4:6] is the sub-list for method output_type
