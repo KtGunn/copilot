@@ -11,6 +11,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 var EmergencyClient *EmergencyClientData
@@ -99,6 +100,9 @@ func CreateEmergencyClient(host string, port int, options []grpc.DialOption) (*E
 
 	client := pb.NewAsyncClient(conn)
 	context, cancel := context.WithCancel(context.Background())
+
+	md := metadata.Pairs("client-id", "user")
+	context = metadata.NewOutgoingContext(context, md)
 
 	return &EmergencyClientData{
 		client:       client,
