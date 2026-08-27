@@ -18,8 +18,12 @@ func main() {
 	sm := NewStateModule(100)
 
 	stop := make(chan struct{})
+
 	go func() {
-		LaunchServer(50052, stop, sm)
+		log.Println(" Will call LAUNCH SERVER")
+		if err := LaunchServer(50052, stop, sm); err != nil {
+			log.Println(" Ooops", err)
+		}
 	}()
 
 	go func() {
@@ -30,7 +34,7 @@ func main() {
 	}()
 
 	log.Println("User Server is running on port 50052...")
-
 	<-stopSignal
+
 	log.Println("User Server has been stopped.")
 }
