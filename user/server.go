@@ -26,18 +26,23 @@ func NewBridgeServer(sm *StateModule) *BridgeServerData {
 }
 
 func LaunchServer(port int, stop chan struct{}, sm *StateModule) error {
+
+	log.Println("LAUNCH SERVER IS CALLED", port)
+
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 
 	if err != nil {
 		return fmt.Errorf("failed to listen: %v", err)
 	}
 
+	log.Println(" NEW SERVER")
 	grpcServer := grpc.NewServer()
 	Bridge = NewBridgeServer(sm)
 
 	pb.RegisterAsyncServer(grpcServer, Bridge)
 
 	// Handle graceful shutdown
+	log.Println(" GO FUNC...")
 	go func() {
 		<-stop
 		log.Println("Shutting down gRPC server...")
