@@ -16,16 +16,18 @@ var Bridge *BridgeServerData
 
 type BridgeServerData struct {
 	pb.UnimplementedAsyncServer
-	StateModule *StateModule
+	StateModule     *StateModule
+	EmergencyModule *EmergencyModule
 }
 
-func NewBridgeServer(sm *StateModule) *BridgeServerData {
+func NewBridgeServer(sm *StateModule, em *EmergencyModule) *BridgeServerData {
 	return &BridgeServerData{
-		StateModule: sm,
+		StateModule:     sm,
+		EmergencyModule: em,
 	}
 }
 
-func LaunchServer(port int, stop chan struct{}, sm *StateModule) error {
+func LaunchServer(port int, stop chan struct{}, sm *StateModule, em *EmergencyModule) error {
 
 	log.Println("LAUNCH SERVER IS CALLED", port)
 
@@ -37,7 +39,7 @@ func LaunchServer(port int, stop chan struct{}, sm *StateModule) error {
 
 	log.Println(" NEW SERVER")
 	grpcServer := grpc.NewServer()
-	Bridge = NewBridgeServer(sm)
+	Bridge = NewBridgeServer(sm, em)
 
 	pb.RegisterAsyncServer(grpcServer, Bridge)
 
@@ -113,6 +115,12 @@ func (s *BridgeServerData) EmergencyUpdate(stream pb.Async_EmergencyUpdateServer
 		if err != nil {
 			log.Printf("Error receiving Emergency: %v", err)
 			return err
+		}
+		if s.EmergencyModule != nil {
+			s.EmergencyModule.EmergencyChan <- ClientEmergency{
+				ClientID:  clientID,
+				Emergency: emergency,
+			}
 		}
 		log.Printf("Received emergency update: %v", emergency.GetWassup())
 	}
