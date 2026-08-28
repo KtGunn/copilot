@@ -27,22 +27,26 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// '0' in enum is special ([ktg] 260828)
 type MyStatus int32
 
 const (
-	MyStatus_IMOK  MyStatus = 0
-	MyStatus_NOTOK MyStatus = 1
+	MyStatus_NASTAT MyStatus = 0
+	MyStatus_IMOK   MyStatus = 1
+	MyStatus_NOTOK  MyStatus = 2
 )
 
 // Enum value maps for MyStatus.
 var (
 	MyStatus_name = map[int32]string{
-		0: "IMOK",
-		1: "NOTOK",
+		0: "NASTAT",
+		1: "IMOK",
+		2: "NOTOK",
 	}
 	MyStatus_value = map[string]int32{
-		"IMOK":  0,
-		"NOTOK": 1,
+		"NASTAT": 0,
+		"IMOK":   1,
+		"NOTOK":  2,
 	}
 )
 
@@ -76,22 +80,25 @@ func (MyStatus) EnumDescriptor() ([]byte, []int) {
 type MyEmergency int32
 
 const (
-	MyEmergency_FIRE  MyEmergency = 0
-	MyEmergency_EVAC  MyEmergency = 1
-	MyEmergency_ALLOK MyEmergency = 2
+	MyEmergency_NAEMG MyEmergency = 0
+	MyEmergency_FIRE  MyEmergency = 1
+	MyEmergency_EVAC  MyEmergency = 2
+	MyEmergency_ALLOK MyEmergency = 3
 )
 
 // Enum value maps for MyEmergency.
 var (
 	MyEmergency_name = map[int32]string{
-		0: "FIRE",
-		1: "EVAC",
-		2: "ALLOK",
+		0: "NAEMG",
+		1: "FIRE",
+		2: "EVAC",
+		3: "ALLOK",
 	}
 	MyEmergency_value = map[string]int32{
-		"FIRE":  0,
-		"EVAC":  1,
-		"ALLOK": 2,
+		"NAEMG": 0,
+		"FIRE":  1,
+		"EVAC":  2,
+		"ALLOK": 3,
 	}
 )
 
@@ -163,7 +170,7 @@ func (x *Status) GetState() MyStatus {
 	if x != nil {
 		return x.State
 	}
-	return MyStatus_IMOK
+	return MyStatus_NASTAT
 }
 
 type Emergency struct {
@@ -207,7 +214,7 @@ func (x *Emergency) GetWassup() MyEmergency {
 	if x != nil {
 		return x.Wassup
 	}
-	return MyEmergency_FIRE
+	return MyEmergency_NAEMG
 }
 
 var File_pilot_proto protoreflect.FileDescriptor
@@ -218,14 +225,17 @@ const file_pilot_proto_rawDesc = "" +
 	"\x06Status\x12'\n" +
 	"\x05State\x18\x01 \x01(\x0e2\x11.sandbox.MyStatusR\x05State\"9\n" +
 	"\tEmergency\x12,\n" +
-	"\x06Wassup\x18\x01 \x01(\x0e2\x14.sandbox.MyEmergencyR\x06Wassup*\x1f\n" +
-	"\bMyStatus\x12\b\n" +
-	"\x04IMOK\x10\x00\x12\t\n" +
-	"\x05NOTOK\x10\x01*,\n" +
-	"\vMyEmergency\x12\b\n" +
-	"\x04FIRE\x10\x00\x12\b\n" +
-	"\x04EVAC\x10\x01\x12\t\n" +
-	"\x05ALLOK\x10\x022\x83\x01\n" +
+	"\x06Wassup\x18\x01 \x01(\x0e2\x14.sandbox.MyEmergencyR\x06Wassup*+\n" +
+	"\bMyStatus\x12\n" +
+	"\n" +
+	"\x06NASTAT\x10\x00\x12\b\n" +
+	"\x04IMOK\x10\x01\x12\t\n" +
+	"\x05NOTOK\x10\x02*7\n" +
+	"\vMyEmergency\x12\t\n" +
+	"\x05NAEMG\x10\x00\x12\b\n" +
+	"\x04FIRE\x10\x01\x12\b\n" +
+	"\x04EVAC\x10\x02\x12\t\n" +
+	"\x05ALLOK\x10\x032\x83\x01\n" +
 	"\x05Async\x129\n" +
 	"\fStatusUpdate\x12\x0f.sandbox.Status\x1a\x16.google.protobuf.Empty(\x01\x12?\n" +
 	"\x0fEmergencyUpdate\x12\x12.sandbox.Emergency\x1a\x16.google.protobuf.Empty(\x01B\x0fZ\rcoptest/protob\x06proto3"

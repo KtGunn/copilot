@@ -10,13 +10,15 @@ import (
 
 func main() {
 
+	log.SetOutput(os.Stdout)
+
 	// Handle graceful shutdown in a goroutine
 	stopSignal := make(chan os.Signal, 1)
 	signal.Notify(stopSignal, os.Interrupt, syscall.SIGTERM)
 
 	// Create and initialize state module with buffer size of 100
 	sm := NewStateModule(10)
-	em := NewEmergencyModule(13)
+	em := NewEmergencyModule()
 
 	stop := make(chan struct{})
 

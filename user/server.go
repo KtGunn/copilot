@@ -12,6 +12,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+
 var Bridge *BridgeServerData
 
 type BridgeServerData struct {
@@ -27,33 +28,28 @@ func NewBridgeServer(sm *StateModule, em *EmergencyModule) *BridgeServerData {
 	}
 }
 
+
 func LaunchServer(port int, stop chan struct{}, sm *StateModule, em *EmergencyModule) error {
 
-	log.Println("LAUNCH SERVER IS CALLED", port)
-
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-
 	if err != nil {
 		return fmt.Errorf("failed to listen: %v", err)
 	}
 
-	log.Println(" NEW SERVER")
 	grpcServer := grpc.NewServer()
 	Bridge = NewBridgeServer(sm, em)
-
 	pb.RegisterAsyncServer(grpcServer, Bridge)
 
-	// Handle graceful shutdown
-	log.Println(" GO FUNC...")
 	go func() {
 		<-stop
 		log.Println("Shutting down gRPC server...")
 		grpcServer.GracefulStop()
 	}()
 
-	log.Printf("Starting gRPC server on port %d", port)
+	log.Printf("gRPC Server on port %d", port)
 	return grpcServer.Serve(lis)
 }
+
 
 func (s *BridgeServerData) GetClientIdentity(stream grpc.ServerStream) string {
 
@@ -75,13 +71,16 @@ func (s *BridgeServerData) GetClientIdentity(stream grpc.ServerStream) string {
 	return "unknown"
 }
 
+
 func (s *BridgeServerData) StatusUpdate(stream pb.Async_StatusUpdateServer) error {
 
 	clientID := s.GetClientIdentity(stream)
 	log.Printf("Started StatusUpdate stream for client: %s\n", clientID)
 
 	for {
+
 		status, err := stream.Recv()
+
 		if err == io.EOF {
 			return stream.SendAndClose(&emptypb.Empty{})
 		}
@@ -96,19 +95,17 @@ func (s *BridgeServerData) StatusUpdate(stream pb.Async_StatusUpdateServer) erro
 				Status:   status,
 			}
 		}
-
-		log.Printf("Received status update from %s: %v", clientID, status.GetState())
 	}
 }
 
 func (s *BridgeServerData) EmergencyUpdate(stream pb.Async_EmergencyUpdateServer) error {
 
 	clientID := s.GetClientIdentity(stream)
-	log.Printf("Started StatusUpdate stream for client: %s\n", clientID)
+	log.Printf("Started Emergency Update stream for client: %s\n", clientID)
 
-	log.Println("Started EmergencyUpdate stream")
 	for {
 		emergency, err := stream.Recv()
+
 		if err == io.EOF {
 			return stream.SendAndClose(&emptypb.Empty{})
 		}
@@ -116,12 +113,12 @@ func (s *BridgeServerData) EmergencyUpdate(stream pb.Async_EmergencyUpdateServer
 			log.Printf("Error receiving Emergency: %v", err)
 			return err
 		}
+
 		if s.EmergencyModule != nil {
 			s.EmergencyModule.EmergencyChan <- ClientEmergency{
 				ClientID:  clientID,
 				Emergency: emergency,
 			}
 		}
-		log.Printf("Received emergency update: %v", emergency.GetWassup())
 	}
 }

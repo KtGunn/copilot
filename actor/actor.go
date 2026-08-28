@@ -32,7 +32,13 @@ func main() {
 				everyFifth++
 				if everyFifth%5 == 0 {
 					log.Println("Sending emergency update")
-					if err := SendEmergencyUpdate(pb.MyEmergency_ALLOK); err != nil {
+					emergencyOptions := []pb.MyEmergency{
+						pb.MyEmergency_ALLOK,
+						pb.MyEmergency_FIRE,
+						pb.MyEmergency_EVAC,
+					}
+					emergency := emergencyOptions[rand.Intn(len(emergencyOptions))]
+					if err := SendEmergencyUpdate(emergency); err != nil {
 						log.Printf("Failed to send 'emergency update': %v", err)
 					}
 					continue
