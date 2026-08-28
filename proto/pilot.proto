@@ -10,9 +10,11 @@ import  "google/protobuf/empty.proto";
 option go_package = "coptest/proto";
 
 
+// '0' in enum is special ([ktg] 260828)
 enum MyStatus {
-     IMOK     = 0;
-     NOTOK    = 1;
+     NASTAT    = 0;
+     IMOK      = 1;
+     NOTOK     = 2;
 }
 
 message Status {
@@ -21,9 +23,10 @@ message Status {
 
 
 enum MyEmergency {
-     FIRE    = 0;
-     EVAC    = 1;
-     ALLOK   = 2;
+     NAEMG   = 0;
+     FIRE    = 1;
+     EVAC    = 2;
+     ALLOK   = 3;
 }
 
 message Emergency {
