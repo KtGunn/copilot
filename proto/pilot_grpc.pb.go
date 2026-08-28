@@ -149,3 +149,99 @@ var Async_ServiceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "pilot.proto",
 }
+
+const (
+	Calls_Send_FullMethodName = "/sandbox.Calls/Send"
+)
+
+// CallsClient is the client API for Calls service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type CallsClient interface {
+	Send(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[Journey, Onway], error)
+}
+
+type callsClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewCallsClient(cc grpc.ClientConnInterface) CallsClient {
+	return &callsClient{cc}
+}
+
+func (c *callsClient) Send(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[Journey, Onway], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Calls_ServiceDesc.Streams[0], Calls_Send_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[Journey, Onway]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Calls_SendClient = grpc.BidiStreamingClient[Journey, Onway]
+
+// CallsServer is the server API for Calls service.
+// All implementations must embed UnimplementedCallsServer
+// for forward compatibility.
+type CallsServer interface {
+	Send(grpc.BidiStreamingServer[Journey, Onway]) error
+	mustEmbedUnimplementedCallsServer()
+}
+
+// UnimplementedCallsServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedCallsServer struct{}
+
+func (UnimplementedCallsServer) Send(grpc.BidiStreamingServer[Journey, Onway]) error {
+	return status.Errorf(codes.Unimplemented, "method Send not implemented")
+}
+func (UnimplementedCallsServer) mustEmbedUnimplementedCallsServer() {}
+func (UnimplementedCallsServer) testEmbeddedByValue()               {}
+
+// UnsafeCallsServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to CallsServer will
+// result in compilation errors.
+type UnsafeCallsServer interface {
+	mustEmbedUnimplementedCallsServer()
+}
+
+func RegisterCallsServer(s grpc.ServiceRegistrar, srv CallsServer) {
+	// If the following call pancis, it indicates UnimplementedCallsServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Calls_ServiceDesc, srv)
+}
+
+func _Calls_Send_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(CallsServer).Send(&grpc.GenericServerStream[Journey, Onway]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Calls_SendServer = grpc.BidiStreamingServer[Journey, Onway]
+
+// Calls_ServiceDesc is the grpc.ServiceDesc for Calls service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Calls_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sandbox.Calls",
+	HandlerType: (*CallsServer)(nil),
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Send",
+			Handler:       _Calls_Send_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
+	Metadata: "pilot.proto",
+}

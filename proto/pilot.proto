@@ -38,3 +38,16 @@ service Async {
          rpc StatusUpdate(stream Status) returns (google.protobuf.Empty);
          rpc EmergencyUpdate(stream Emergency) returns (google.protobuf.Empty);
 }
+
+message Onway {
+        int32  Code = 1; 
+        string Message = 2;
+}
+
+message Journey {
+        string Plan = 1;
+}
+
+service Calls {
+         rpc Send(stream Journey) returns (stream Onway);
+}
