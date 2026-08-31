@@ -34,20 +34,21 @@ message Emergency {
 }
 
 
+// Actor/client streams to the User/server
 service Async {
          rpc StatusUpdate(stream Status) returns (google.protobuf.Empty);
          rpc EmergencyUpdate(stream Emergency) returns (google.protobuf.Empty);
 }
 
-message Onway {
-        int32  Code = 1; 
-        string Message = 2;
+message StatusQuery {
+        string Squery = 1;
 }
 
-message Journey {
-        string Plan = 1;
+message StatusResponse {
+        string Sresponse = 1;
 }
 
+// Actor/client serves responsens to User/server's queries
 service Calls {
-         rpc Send(stream Journey) returns (stream Onway);
+         rpc Send(stream StatusQuery) returns (stream StatusResponse);
 }

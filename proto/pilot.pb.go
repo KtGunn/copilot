@@ -217,28 +217,27 @@ func (x *Emergency) GetWassup() MyEmergency {
 	return MyEmergency_NAEMG
 }
 
-type Onway struct {
+type StatusQuery struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=Code,proto3" json:"Code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	Squery        string                 `protobuf:"bytes,1,opt,name=Squery,proto3" json:"Squery,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Onway) Reset() {
-	*x = Onway{}
+func (x *StatusQuery) Reset() {
+	*x = StatusQuery{}
 	mi := &file_pilot_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Onway) String() string {
+func (x *StatusQuery) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Onway) ProtoMessage() {}
+func (*StatusQuery) ProtoMessage() {}
 
-func (x *Onway) ProtoReflect() protoreflect.Message {
+func (x *StatusQuery) ProtoReflect() protoreflect.Message {
 	mi := &file_pilot_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -250,46 +249,39 @@ func (x *Onway) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Onway.ProtoReflect.Descriptor instead.
-func (*Onway) Descriptor() ([]byte, []int) {
+// Deprecated: Use StatusQuery.ProtoReflect.Descriptor instead.
+func (*StatusQuery) Descriptor() ([]byte, []int) {
 	return file_pilot_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *Onway) GetCode() int32 {
+func (x *StatusQuery) GetSquery() string {
 	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *Onway) GetMessage() string {
-	if x != nil {
-		return x.Message
+		return x.Squery
 	}
 	return ""
 }
 
-type Journey struct {
+type StatusResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Plan          string                 `protobuf:"bytes,1,opt,name=Plan,proto3" json:"Plan,omitempty"`
+	Sresponse     string                 `protobuf:"bytes,1,opt,name=Sresponse,proto3" json:"Sresponse,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Journey) Reset() {
-	*x = Journey{}
+func (x *StatusResponse) Reset() {
+	*x = StatusResponse{}
 	mi := &file_pilot_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Journey) String() string {
+func (x *StatusResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Journey) ProtoMessage() {}
+func (*StatusResponse) ProtoMessage() {}
 
-func (x *Journey) ProtoReflect() protoreflect.Message {
+func (x *StatusResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_pilot_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -301,14 +293,14 @@ func (x *Journey) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Journey.ProtoReflect.Descriptor instead.
-func (*Journey) Descriptor() ([]byte, []int) {
+// Deprecated: Use StatusResponse.ProtoReflect.Descriptor instead.
+func (*StatusResponse) Descriptor() ([]byte, []int) {
 	return file_pilot_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *Journey) GetPlan() string {
+func (x *StatusResponse) GetSresponse() string {
 	if x != nil {
-		return x.Plan
+		return x.Sresponse
 	}
 	return ""
 }
@@ -321,12 +313,11 @@ const file_pilot_proto_rawDesc = "" +
 	"\x06Status\x12'\n" +
 	"\x05State\x18\x01 \x01(\x0e2\x11.sandbox.MyStatusR\x05State\"9\n" +
 	"\tEmergency\x12,\n" +
-	"\x06Wassup\x18\x01 \x01(\x0e2\x14.sandbox.MyEmergencyR\x06Wassup\"5\n" +
-	"\x05Onway\x12\x12\n" +
-	"\x04Code\x18\x01 \x01(\x05R\x04Code\x12\x18\n" +
-	"\aMessage\x18\x02 \x01(\tR\aMessage\"\x1d\n" +
-	"\aJourney\x12\x12\n" +
-	"\x04Plan\x18\x01 \x01(\tR\x04Plan*+\n" +
+	"\x06Wassup\x18\x01 \x01(\x0e2\x14.sandbox.MyEmergencyR\x06Wassup\"%\n" +
+	"\vStatusQuery\x12\x16\n" +
+	"\x06Squery\x18\x01 \x01(\tR\x06Squery\".\n" +
+	"\x0eStatusResponse\x12\x1c\n" +
+	"\tSresponse\x18\x01 \x01(\tR\tSresponse*+\n" +
 	"\bMyStatus\x12\n" +
 	"\n" +
 	"\x06NASTAT\x10\x00\x12\b\n" +
@@ -339,9 +330,9 @@ const file_pilot_proto_rawDesc = "" +
 	"\x05ALLOK\x10\x032\x83\x01\n" +
 	"\x05Async\x129\n" +
 	"\fStatusUpdate\x12\x0f.sandbox.Status\x1a\x16.google.protobuf.Empty(\x01\x12?\n" +
-	"\x0fEmergencyUpdate\x12\x12.sandbox.Emergency\x1a\x16.google.protobuf.Empty(\x0125\n" +
-	"\x05Calls\x12,\n" +
-	"\x04Send\x12\x10.sandbox.Journey\x1a\x0e.sandbox.Onway(\x010\x01B\x0fZ\rcoptest/protob\x06proto3"
+	"\x0fEmergencyUpdate\x12\x12.sandbox.Emergency\x1a\x16.google.protobuf.Empty(\x012B\n" +
+	"\x05Calls\x129\n" +
+	"\x04Send\x12\x14.sandbox.StatusQuery\x1a\x17.sandbox.StatusResponse(\x010\x01B\x0fZ\rcoptest/protob\x06proto3"
 
 var (
 	file_pilot_proto_rawDescOnce sync.Once
@@ -358,23 +349,23 @@ func file_pilot_proto_rawDescGZIP() []byte {
 var file_pilot_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_pilot_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_pilot_proto_goTypes = []any{
-	(MyStatus)(0),       // 0: sandbox.MyStatus
-	(MyEmergency)(0),    // 1: sandbox.MyEmergency
-	(*Status)(nil),      // 2: sandbox.Status
-	(*Emergency)(nil),   // 3: sandbox.Emergency
-	(*Onway)(nil),       // 4: sandbox.Onway
-	(*Journey)(nil),     // 5: sandbox.Journey
-	(*empty.Empty)(nil), // 6: google.protobuf.Empty
+	(MyStatus)(0),          // 0: sandbox.MyStatus
+	(MyEmergency)(0),       // 1: sandbox.MyEmergency
+	(*Status)(nil),         // 2: sandbox.Status
+	(*Emergency)(nil),      // 3: sandbox.Emergency
+	(*StatusQuery)(nil),    // 4: sandbox.StatusQuery
+	(*StatusResponse)(nil), // 5: sandbox.StatusResponse
+	(*empty.Empty)(nil),    // 6: google.protobuf.Empty
 }
 var file_pilot_proto_depIdxs = []int32{
 	0, // 0: sandbox.Status.State:type_name -> sandbox.MyStatus
 	1, // 1: sandbox.Emergency.Wassup:type_name -> sandbox.MyEmergency
 	2, // 2: sandbox.Async.StatusUpdate:input_type -> sandbox.Status
 	3, // 3: sandbox.Async.EmergencyUpdate:input_type -> sandbox.Emergency
-	5, // 4: sandbox.Calls.Send:input_type -> sandbox.Journey
+	4, // 4: sandbox.Calls.Send:input_type -> sandbox.StatusQuery
 	6, // 5: sandbox.Async.StatusUpdate:output_type -> google.protobuf.Empty
 	6, // 6: sandbox.Async.EmergencyUpdate:output_type -> google.protobuf.Empty
-	4, // 7: sandbox.Calls.Send:output_type -> sandbox.Onway
+	5, // 7: sandbox.Calls.Send:output_type -> sandbox.StatusResponse
 	5, // [5:8] is the sub-list for method output_type
 	2, // [2:5] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

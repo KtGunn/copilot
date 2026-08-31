@@ -32,6 +32,8 @@ const (
 // AsyncClient is the client API for Async service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Actor/client streams to the User/server
 type AsyncClient interface {
 	StatusUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Status, empty.Empty], error)
 	EmergencyUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Emergency, empty.Empty], error)
@@ -74,6 +76,8 @@ type Async_EmergencyUpdateClient = grpc.ClientStreamingClient[Emergency, empty.E
 // AsyncServer is the server API for Async service.
 // All implementations must embed UnimplementedAsyncServer
 // for forward compatibility.
+//
+// Actor/client streams to the User/server
 type AsyncServer interface {
 	StatusUpdate(grpc.ClientStreamingServer[Status, empty.Empty]) error
 	EmergencyUpdate(grpc.ClientStreamingServer[Emergency, empty.Empty]) error
@@ -157,8 +161,10 @@ const (
 // CallsClient is the client API for Calls service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Actor/client serves responsens to User/server's queries
 type CallsClient interface {
-	Send(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[Journey, Onway], error)
+	Send(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[StatusQuery, StatusResponse], error)
 }
 
 type callsClient struct {
@@ -169,24 +175,26 @@ func NewCallsClient(cc grpc.ClientConnInterface) CallsClient {
 	return &callsClient{cc}
 }
 
-func (c *callsClient) Send(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[Journey, Onway], error) {
+func (c *callsClient) Send(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[StatusQuery, StatusResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &Calls_ServiceDesc.Streams[0], Calls_Send_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[Journey, Onway]{ClientStream: stream}
+	x := &grpc.GenericClientStream[StatusQuery, StatusResponse]{ClientStream: stream}
 	return x, nil
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Calls_SendClient = grpc.BidiStreamingClient[Journey, Onway]
+type Calls_SendClient = grpc.BidiStreamingClient[StatusQuery, StatusResponse]
 
 // CallsServer is the server API for Calls service.
 // All implementations must embed UnimplementedCallsServer
 // for forward compatibility.
+//
+// Actor/client serves responsens to User/server's queries
 type CallsServer interface {
-	Send(grpc.BidiStreamingServer[Journey, Onway]) error
+	Send(grpc.BidiStreamingServer[StatusQuery, StatusResponse]) error
 	mustEmbedUnimplementedCallsServer()
 }
 
@@ -197,7 +205,7 @@ type CallsServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCallsServer struct{}
 
-func (UnimplementedCallsServer) Send(grpc.BidiStreamingServer[Journey, Onway]) error {
+func (UnimplementedCallsServer) Send(grpc.BidiStreamingServer[StatusQuery, StatusResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method Send not implemented")
 }
 func (UnimplementedCallsServer) mustEmbedUnimplementedCallsServer() {}
@@ -222,11 +230,11 @@ func RegisterCallsServer(s grpc.ServiceRegistrar, srv CallsServer) {
 }
 
 func _Calls_Send_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(CallsServer).Send(&grpc.GenericServerStream[Journey, Onway]{ServerStream: stream})
+	return srv.(CallsServer).Send(&grpc.GenericServerStream[StatusQuery, StatusResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Calls_SendServer = grpc.BidiStreamingServer[Journey, Onway]
+type Calls_SendServer = grpc.BidiStreamingServer[StatusQuery, StatusResponse]
 
 // Calls_ServiceDesc is the grpc.ServiceDesc for Calls service.
 // It's only intended for direct use with grpc.RegisterService,
