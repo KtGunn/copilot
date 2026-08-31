@@ -7,7 +7,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.12.4
-// source: pilot.proto
+// source: proto/pilot.proto
 
 package proto
 
@@ -151,7 +151,7 @@ var Async_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "pilot.proto",
+	Metadata: "proto/pilot.proto",
 }
 
 const (
@@ -164,7 +164,7 @@ const (
 //
 // Actor/client serves responsens to User/server's queries
 type CallsClient interface {
-	Send(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[StatusQuery, StatusResponse], error)
+	Send(ctx context.Context, in *StateQuery, opts ...grpc.CallOption) (*StateResponse, error)
 }
 
 type callsClient struct {
@@ -175,18 +175,15 @@ func NewCallsClient(cc grpc.ClientConnInterface) CallsClient {
 	return &callsClient{cc}
 }
 
-func (c *callsClient) Send(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[StatusQuery, StatusResponse], error) {
+func (c *callsClient) Send(ctx context.Context, in *StateQuery, opts ...grpc.CallOption) (*StateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &Calls_ServiceDesc.Streams[0], Calls_Send_FullMethodName, cOpts...)
+	out := new(StateResponse)
+	err := c.cc.Invoke(ctx, Calls_Send_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[StatusQuery, StatusResponse]{ClientStream: stream}
-	return x, nil
+	return out, nil
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Calls_SendClient = grpc.BidiStreamingClient[StatusQuery, StatusResponse]
 
 // CallsServer is the server API for Calls service.
 // All implementations must embed UnimplementedCallsServer
@@ -194,7 +191,7 @@ type Calls_SendClient = grpc.BidiStreamingClient[StatusQuery, StatusResponse]
 //
 // Actor/client serves responsens to User/server's queries
 type CallsServer interface {
-	Send(grpc.BidiStreamingServer[StatusQuery, StatusResponse]) error
+	Send(context.Context, *StateQuery) (*StateResponse, error)
 	mustEmbedUnimplementedCallsServer()
 }
 
@@ -205,8 +202,8 @@ type CallsServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCallsServer struct{}
 
-func (UnimplementedCallsServer) Send(grpc.BidiStreamingServer[StatusQuery, StatusResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method Send not implemented")
+func (UnimplementedCallsServer) Send(context.Context, *StateQuery) (*StateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
 }
 func (UnimplementedCallsServer) mustEmbedUnimplementedCallsServer() {}
 func (UnimplementedCallsServer) testEmbeddedByValue()               {}
@@ -229,12 +226,23 @@ func RegisterCallsServer(s grpc.ServiceRegistrar, srv CallsServer) {
 	s.RegisterService(&Calls_ServiceDesc, srv)
 }
 
-func _Calls_Send_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(CallsServer).Send(&grpc.GenericServerStream[StatusQuery, StatusResponse]{ServerStream: stream})
+func _Calls_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StateQuery)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CallsServer).Send(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Calls_Send_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CallsServer).Send(ctx, req.(*StateQuery))
+	}
+	return interceptor(ctx, in, info, handler)
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Calls_SendServer = grpc.BidiStreamingServer[StatusQuery, StatusResponse]
 
 // Calls_ServiceDesc is the grpc.ServiceDesc for Calls service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -242,14 +250,12 @@ type Calls_SendServer = grpc.BidiStreamingServer[StatusQuery, StatusResponse]
 var Calls_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "sandbox.Calls",
 	HandlerType: (*CallsServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "Send",
-			Handler:       _Calls_Send_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
+			MethodName: "Send",
+			Handler:    _Calls_Send_Handler,
 		},
 	},
-	Metadata: "pilot.proto",
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/pilot.proto",
 }
