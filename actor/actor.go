@@ -15,6 +15,10 @@ func main() {
 	StartStateHandler("localhost", 50052, stop)
 	StartEmergencyHandler("localhost", 50052, stop)
 
+	go func() {
+		LaunchCallsServer(50054, stop)
+	}()
+
 	go func(stop chan struct{}) {
 
 		ticker := time.NewTicker(2 * time.Second)
