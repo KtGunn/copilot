@@ -34,7 +34,21 @@ message Emergency {
 }
 
 
+// Actor/client streams to the User/server
 service Async {
          rpc StatusUpdate(stream Status) returns (google.protobuf.Empty);
          rpc EmergencyUpdate(stream Emergency) returns (google.protobuf.Empty);
+}
+
+message StateQuery {
+        string Squery = 1;
+}
+
+message StateResponse {
+        string Sresponse = 1;
+}
+
+// Actor/client serves responsens to User/server's queries
+service Calls {
+         rpc Send(StateQuery) returns (StateResponse);
 }

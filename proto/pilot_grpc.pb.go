@@ -7,7 +7,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.12.4
-// source: pilot.proto
+// source: proto/pilot.proto
 
 package proto
 
@@ -32,6 +32,8 @@ const (
 // AsyncClient is the client API for Async service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Actor/client streams to the User/server
 type AsyncClient interface {
 	StatusUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Status, empty.Empty], error)
 	EmergencyUpdate(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Emergency, empty.Empty], error)
@@ -74,6 +76,8 @@ type Async_EmergencyUpdateClient = grpc.ClientStreamingClient[Emergency, empty.E
 // AsyncServer is the server API for Async service.
 // All implementations must embed UnimplementedAsyncServer
 // for forward compatibility.
+//
+// Actor/client streams to the User/server
 type AsyncServer interface {
 	StatusUpdate(grpc.ClientStreamingServer[Status, empty.Empty]) error
 	EmergencyUpdate(grpc.ClientStreamingServer[Emergency, empty.Empty]) error
@@ -147,5 +151,111 @@ var Async_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "pilot.proto",
+	Metadata: "proto/pilot.proto",
+}
+
+const (
+	Calls_Send_FullMethodName = "/sandbox.Calls/Send"
+)
+
+// CallsClient is the client API for Calls service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Actor/client serves responsens to User/server's queries
+type CallsClient interface {
+	Send(ctx context.Context, in *StateQuery, opts ...grpc.CallOption) (*StateResponse, error)
+}
+
+type callsClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewCallsClient(cc grpc.ClientConnInterface) CallsClient {
+	return &callsClient{cc}
+}
+
+func (c *callsClient) Send(ctx context.Context, in *StateQuery, opts ...grpc.CallOption) (*StateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StateResponse)
+	err := c.cc.Invoke(ctx, Calls_Send_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// CallsServer is the server API for Calls service.
+// All implementations must embed UnimplementedCallsServer
+// for forward compatibility.
+//
+// Actor/client serves responsens to User/server's queries
+type CallsServer interface {
+	Send(context.Context, *StateQuery) (*StateResponse, error)
+	mustEmbedUnimplementedCallsServer()
+}
+
+// UnimplementedCallsServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedCallsServer struct{}
+
+func (UnimplementedCallsServer) Send(context.Context, *StateQuery) (*StateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
+}
+func (UnimplementedCallsServer) mustEmbedUnimplementedCallsServer() {}
+func (UnimplementedCallsServer) testEmbeddedByValue()               {}
+
+// UnsafeCallsServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to CallsServer will
+// result in compilation errors.
+type UnsafeCallsServer interface {
+	mustEmbedUnimplementedCallsServer()
+}
+
+func RegisterCallsServer(s grpc.ServiceRegistrar, srv CallsServer) {
+	// If the following call pancis, it indicates UnimplementedCallsServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Calls_ServiceDesc, srv)
+}
+
+func _Calls_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StateQuery)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CallsServer).Send(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Calls_Send_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CallsServer).Send(ctx, req.(*StateQuery))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Calls_ServiceDesc is the grpc.ServiceDesc for Calls service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Calls_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sandbox.Calls",
+	HandlerType: (*CallsServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Send",
+			Handler:    _Calls_Send_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/pilot.proto",
 }
