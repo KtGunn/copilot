@@ -7,7 +7,7 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v3.12.4
-// source: proto/pilot.proto
+// source: pilot.proto
 
 package proto
 
@@ -27,6 +27,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// /////////////////////////////////////////////////////////////
+// ASYNC
+//
 // '0' in enum is special ([ktg] 260828)
 type MyStatus int32
 
@@ -61,11 +64,11 @@ func (x MyStatus) String() string {
 }
 
 func (MyStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_pilot_proto_enumTypes[0].Descriptor()
+	return file_pilot_proto_enumTypes[0].Descriptor()
 }
 
 func (MyStatus) Type() protoreflect.EnumType {
-	return &file_proto_pilot_proto_enumTypes[0]
+	return &file_pilot_proto_enumTypes[0]
 }
 
 func (x MyStatus) Number() protoreflect.EnumNumber {
@@ -74,31 +77,28 @@ func (x MyStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MyStatus.Descriptor instead.
 func (MyStatus) EnumDescriptor() ([]byte, []int) {
-	return file_proto_pilot_proto_rawDescGZIP(), []int{0}
+	return file_pilot_proto_rawDescGZIP(), []int{0}
 }
 
 type MyEmergency int32
 
 const (
-	MyEmergency_NAEMG MyEmergency = 0
-	MyEmergency_FIRE  MyEmergency = 1
-	MyEmergency_EVAC  MyEmergency = 2
-	MyEmergency_ALLOK MyEmergency = 3
+	MyEmergency_NA    MyEmergency = 0
+	MyEmergency_STOP  MyEmergency = 1
+	MyEmergency_ALLOK MyEmergency = 2
 )
 
 // Enum value maps for MyEmergency.
 var (
 	MyEmergency_name = map[int32]string{
-		0: "NAEMG",
-		1: "FIRE",
-		2: "EVAC",
-		3: "ALLOK",
+		0: "NA",
+		1: "STOP",
+		2: "ALLOK",
 	}
 	MyEmergency_value = map[string]int32{
-		"NAEMG": 0,
-		"FIRE":  1,
-		"EVAC":  2,
-		"ALLOK": 3,
+		"NA":    0,
+		"STOP":  1,
+		"ALLOK": 2,
 	}
 )
 
@@ -113,11 +113,11 @@ func (x MyEmergency) String() string {
 }
 
 func (MyEmergency) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_pilot_proto_enumTypes[1].Descriptor()
+	return file_pilot_proto_enumTypes[1].Descriptor()
 }
 
 func (MyEmergency) Type() protoreflect.EnumType {
-	return &file_proto_pilot_proto_enumTypes[1]
+	return &file_pilot_proto_enumTypes[1]
 }
 
 func (x MyEmergency) Number() protoreflect.EnumNumber {
@@ -126,19 +126,22 @@ func (x MyEmergency) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MyEmergency.Descriptor instead.
 func (MyEmergency) EnumDescriptor() ([]byte, []int) {
-	return file_proto_pilot_proto_rawDescGZIP(), []int{1}
+	return file_pilot_proto_rawDescGZIP(), []int{1}
 }
 
 type Status struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         MyStatus               `protobuf:"varint,1,opt,name=State,proto3,enum=sandbox.MyStatus" json:"State,omitempty"`
+	Motion        string                 `protobuf:"bytes,1,opt,name=Motion,proto3" json:"Motion,omitempty"`
+	Speed         int32                  `protobuf:"varint,2,opt,name=Speed,proto3" json:"Speed,omitempty"`
+	Spot          int32                  `protobuf:"varint,3,opt,name=Spot,proto3" json:"Spot,omitempty"`
+	Target        int32                  `protobuf:"varint,4,opt,name=Target,proto3" json:"Target,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Status) Reset() {
 	*x = Status{}
-	mi := &file_proto_pilot_proto_msgTypes[0]
+	mi := &file_pilot_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -150,7 +153,7 @@ func (x *Status) String() string {
 func (*Status) ProtoMessage() {}
 
 func (x *Status) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_pilot_proto_msgTypes[0]
+	mi := &file_pilot_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -163,14 +166,35 @@ func (x *Status) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Status.ProtoReflect.Descriptor instead.
 func (*Status) Descriptor() ([]byte, []int) {
-	return file_proto_pilot_proto_rawDescGZIP(), []int{0}
+	return file_pilot_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Status) GetState() MyStatus {
+func (x *Status) GetMotion() string {
 	if x != nil {
-		return x.State
+		return x.Motion
 	}
-	return MyStatus_NASTAT
+	return ""
+}
+
+func (x *Status) GetSpeed() int32 {
+	if x != nil {
+		return x.Speed
+	}
+	return 0
+}
+
+func (x *Status) GetSpot() int32 {
+	if x != nil {
+		return x.Spot
+	}
+	return 0
+}
+
+func (x *Status) GetTarget() int32 {
+	if x != nil {
+		return x.Target
+	}
+	return 0
 }
 
 type Emergency struct {
@@ -182,7 +206,7 @@ type Emergency struct {
 
 func (x *Emergency) Reset() {
 	*x = Emergency{}
-	mi := &file_proto_pilot_proto_msgTypes[1]
+	mi := &file_pilot_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -194,7 +218,7 @@ func (x *Emergency) String() string {
 func (*Emergency) ProtoMessage() {}
 
 func (x *Emergency) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_pilot_proto_msgTypes[1]
+	mi := &file_pilot_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -207,16 +231,18 @@ func (x *Emergency) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Emergency.ProtoReflect.Descriptor instead.
 func (*Emergency) Descriptor() ([]byte, []int) {
-	return file_proto_pilot_proto_rawDescGZIP(), []int{1}
+	return file_pilot_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Emergency) GetWassup() MyEmergency {
 	if x != nil {
 		return x.Wassup
 	}
-	return MyEmergency_NAEMG
+	return MyEmergency_NA
 }
 
+// /////////////////////////////////////////////////////////////
+// CALLS
 type StateQuery struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Squery        string                 `protobuf:"bytes,1,opt,name=Squery,proto3" json:"Squery,omitempty"`
@@ -226,7 +252,7 @@ type StateQuery struct {
 
 func (x *StateQuery) Reset() {
 	*x = StateQuery{}
-	mi := &file_proto_pilot_proto_msgTypes[2]
+	mi := &file_pilot_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -238,7 +264,7 @@ func (x *StateQuery) String() string {
 func (*StateQuery) ProtoMessage() {}
 
 func (x *StateQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_pilot_proto_msgTypes[2]
+	mi := &file_pilot_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -251,7 +277,7 @@ func (x *StateQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StateQuery.ProtoReflect.Descriptor instead.
 func (*StateQuery) Descriptor() ([]byte, []int) {
-	return file_proto_pilot_proto_rawDescGZIP(), []int{2}
+	return file_pilot_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *StateQuery) GetSquery() string {
@@ -270,7 +296,7 @@ type StateResponse struct {
 
 func (x *StateResponse) Reset() {
 	*x = StateResponse{}
-	mi := &file_proto_pilot_proto_msgTypes[3]
+	mi := &file_pilot_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -282,7 +308,7 @@ func (x *StateResponse) String() string {
 func (*StateResponse) ProtoMessage() {}
 
 func (x *StateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_pilot_proto_msgTypes[3]
+	mi := &file_pilot_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -295,7 +321,7 @@ func (x *StateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StateResponse.ProtoReflect.Descriptor instead.
 func (*StateResponse) Descriptor() ([]byte, []int) {
-	return file_proto_pilot_proto_rawDescGZIP(), []int{3}
+	return file_pilot_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *StateResponse) GetSresponse() string {
@@ -305,96 +331,203 @@ func (x *StateResponse) GetSresponse() string {
 	return ""
 }
 
-var File_proto_pilot_proto protoreflect.FileDescriptor
+type TargetCommand struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Target        int32                  `protobuf:"varint,1,opt,name=Target,proto3" json:"Target,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
 
-const file_proto_pilot_proto_rawDesc = "" +
+func (x *TargetCommand) Reset() {
+	*x = TargetCommand{}
+	mi := &file_pilot_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TargetCommand) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TargetCommand) ProtoMessage() {}
+
+func (x *TargetCommand) ProtoReflect() protoreflect.Message {
+	mi := &file_pilot_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TargetCommand.ProtoReflect.Descriptor instead.
+func (*TargetCommand) Descriptor() ([]byte, []int) {
+	return file_pilot_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *TargetCommand) GetTarget() int32 {
+	if x != nil {
+		return x.Target
+	}
+	return 0
+}
+
+type TargetReport struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          int32                  `protobuf:"varint,1,opt,name=Code,proto3" json:"Code,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TargetReport) Reset() {
+	*x = TargetReport{}
+	mi := &file_pilot_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TargetReport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TargetReport) ProtoMessage() {}
+
+func (x *TargetReport) ProtoReflect() protoreflect.Message {
+	mi := &file_pilot_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TargetReport.ProtoReflect.Descriptor instead.
+func (*TargetReport) Descriptor() ([]byte, []int) {
+	return file_pilot_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *TargetReport) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *TargetReport) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+var File_pilot_proto protoreflect.FileDescriptor
+
+const file_pilot_proto_rawDesc = "" +
 	"\n" +
-	"\x11proto/pilot.proto\x12\asandbox\x1a\x1bgoogle/protobuf/empty.proto\"1\n" +
-	"\x06Status\x12'\n" +
-	"\x05State\x18\x01 \x01(\x0e2\x11.sandbox.MyStatusR\x05State\"9\n" +
+	"\vpilot.proto\x12\asandbox\x1a\x1bgoogle/protobuf/empty.proto\"b\n" +
+	"\x06Status\x12\x16\n" +
+	"\x06Motion\x18\x01 \x01(\tR\x06Motion\x12\x14\n" +
+	"\x05Speed\x18\x02 \x01(\x05R\x05Speed\x12\x12\n" +
+	"\x04Spot\x18\x03 \x01(\x05R\x04Spot\x12\x16\n" +
+	"\x06Target\x18\x04 \x01(\x05R\x06Target\"9\n" +
 	"\tEmergency\x12,\n" +
 	"\x06Wassup\x18\x01 \x01(\x0e2\x14.sandbox.MyEmergencyR\x06Wassup\"$\n" +
 	"\n" +
 	"StateQuery\x12\x16\n" +
 	"\x06Squery\x18\x01 \x01(\tR\x06Squery\"-\n" +
 	"\rStateResponse\x12\x1c\n" +
-	"\tSresponse\x18\x01 \x01(\tR\tSresponse*+\n" +
+	"\tSresponse\x18\x01 \x01(\tR\tSresponse\"'\n" +
+	"\rTargetCommand\x12\x16\n" +
+	"\x06Target\x18\x01 \x01(\x05R\x06Target\"<\n" +
+	"\fTargetReport\x12\x12\n" +
+	"\x04Code\x18\x01 \x01(\x05R\x04Code\x12\x18\n" +
+	"\aMessage\x18\x02 \x01(\tR\aMessage*+\n" +
 	"\bMyStatus\x12\n" +
 	"\n" +
 	"\x06NASTAT\x10\x00\x12\b\n" +
 	"\x04IMOK\x10\x01\x12\t\n" +
-	"\x05NOTOK\x10\x02*7\n" +
-	"\vMyEmergency\x12\t\n" +
-	"\x05NAEMG\x10\x00\x12\b\n" +
-	"\x04FIRE\x10\x01\x12\b\n" +
-	"\x04EVAC\x10\x02\x12\t\n" +
-	"\x05ALLOK\x10\x032\x83\x01\n" +
+	"\x05NOTOK\x10\x02**\n" +
+	"\vMyEmergency\x12\x06\n" +
+	"\x02NA\x10\x00\x12\b\n" +
+	"\x04STOP\x10\x01\x12\t\n" +
+	"\x05ALLOK\x10\x022\x83\x01\n" +
 	"\x05Async\x129\n" +
 	"\fStatusUpdate\x12\x0f.sandbox.Status\x1a\x16.google.protobuf.Empty(\x01\x12?\n" +
-	"\x0fEmergencyUpdate\x12\x12.sandbox.Emergency\x1a\x16.google.protobuf.Empty(\x012<\n" +
+	"\x0fEmergencyUpdate\x12\x12.sandbox.Emergency\x1a\x16.google.protobuf.Empty(\x012w\n" +
 	"\x05Calls\x123\n" +
-	"\x04Send\x12\x13.sandbox.StateQuery\x1a\x16.sandbox.StateResponseB\x0fZ\rcoptest/protob\x06proto3"
+	"\x04Send\x12\x13.sandbox.StateQuery\x1a\x16.sandbox.StateResponse\x129\n" +
+	"\x06MoveTo\x12\x16.sandbox.TargetCommand\x1a\x15.sandbox.TargetReport0\x01B\x0fZ\rcoptest/protob\x06proto3"
 
 var (
-	file_proto_pilot_proto_rawDescOnce sync.Once
-	file_proto_pilot_proto_rawDescData []byte
+	file_pilot_proto_rawDescOnce sync.Once
+	file_pilot_proto_rawDescData []byte
 )
 
-func file_proto_pilot_proto_rawDescGZIP() []byte {
-	file_proto_pilot_proto_rawDescOnce.Do(func() {
-		file_proto_pilot_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_pilot_proto_rawDesc), len(file_proto_pilot_proto_rawDesc)))
+func file_pilot_proto_rawDescGZIP() []byte {
+	file_pilot_proto_rawDescOnce.Do(func() {
+		file_pilot_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_pilot_proto_rawDesc), len(file_pilot_proto_rawDesc)))
 	})
-	return file_proto_pilot_proto_rawDescData
+	return file_pilot_proto_rawDescData
 }
 
-var file_proto_pilot_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_proto_pilot_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_proto_pilot_proto_goTypes = []any{
+var file_pilot_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_pilot_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_pilot_proto_goTypes = []any{
 	(MyStatus)(0),         // 0: sandbox.MyStatus
 	(MyEmergency)(0),      // 1: sandbox.MyEmergency
 	(*Status)(nil),        // 2: sandbox.Status
 	(*Emergency)(nil),     // 3: sandbox.Emergency
 	(*StateQuery)(nil),    // 4: sandbox.StateQuery
 	(*StateResponse)(nil), // 5: sandbox.StateResponse
-	(*empty.Empty)(nil),   // 6: google.protobuf.Empty
+	(*TargetCommand)(nil), // 6: sandbox.TargetCommand
+	(*TargetReport)(nil),  // 7: sandbox.TargetReport
+	(*empty.Empty)(nil),   // 8: google.protobuf.Empty
 }
-var file_proto_pilot_proto_depIdxs = []int32{
-	0, // 0: sandbox.Status.State:type_name -> sandbox.MyStatus
-	1, // 1: sandbox.Emergency.Wassup:type_name -> sandbox.MyEmergency
-	2, // 2: sandbox.Async.StatusUpdate:input_type -> sandbox.Status
-	3, // 3: sandbox.Async.EmergencyUpdate:input_type -> sandbox.Emergency
-	4, // 4: sandbox.Calls.Send:input_type -> sandbox.StateQuery
-	6, // 5: sandbox.Async.StatusUpdate:output_type -> google.protobuf.Empty
-	6, // 6: sandbox.Async.EmergencyUpdate:output_type -> google.protobuf.Empty
+var file_pilot_proto_depIdxs = []int32{
+	1, // 0: sandbox.Emergency.Wassup:type_name -> sandbox.MyEmergency
+	2, // 1: sandbox.Async.StatusUpdate:input_type -> sandbox.Status
+	3, // 2: sandbox.Async.EmergencyUpdate:input_type -> sandbox.Emergency
+	4, // 3: sandbox.Calls.Send:input_type -> sandbox.StateQuery
+	6, // 4: sandbox.Calls.MoveTo:input_type -> sandbox.TargetCommand
+	8, // 5: sandbox.Async.StatusUpdate:output_type -> google.protobuf.Empty
+	8, // 6: sandbox.Async.EmergencyUpdate:output_type -> google.protobuf.Empty
 	5, // 7: sandbox.Calls.Send:output_type -> sandbox.StateResponse
-	5, // [5:8] is the sub-list for method output_type
-	2, // [2:5] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	7, // 8: sandbox.Calls.MoveTo:output_type -> sandbox.TargetReport
+	5, // [5:9] is the sub-list for method output_type
+	1, // [1:5] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_proto_pilot_proto_init() }
-func file_proto_pilot_proto_init() {
-	if File_proto_pilot_proto != nil {
+func init() { file_pilot_proto_init() }
+func file_pilot_proto_init() {
+	if File_pilot_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_pilot_proto_rawDesc), len(file_proto_pilot_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pilot_proto_rawDesc), len(file_pilot_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
-		GoTypes:           file_proto_pilot_proto_goTypes,
-		DependencyIndexes: file_proto_pilot_proto_depIdxs,
-		EnumInfos:         file_proto_pilot_proto_enumTypes,
-		MessageInfos:      file_proto_pilot_proto_msgTypes,
+		GoTypes:           file_pilot_proto_goTypes,
+		DependencyIndexes: file_pilot_proto_depIdxs,
+		EnumInfos:         file_pilot_proto_enumTypes,
+		MessageInfos:      file_pilot_proto_msgTypes,
 	}.Build()
-	File_proto_pilot_proto = out.File
-	file_proto_pilot_proto_goTypes = nil
-	file_proto_pilot_proto_depIdxs = nil
+	File_pilot_proto = out.File
+	file_pilot_proto_goTypes = nil
+	file_pilot_proto_depIdxs = nil
 }

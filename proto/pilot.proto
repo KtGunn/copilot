@@ -10,6 +10,10 @@ import  "google/protobuf/empty.proto";
 option go_package = "coptest/proto";
 
 
+
+///////////////////////////////////////////////////////////////
+// ASYNC
+//
 // '0' in enum is special ([ktg] 260828)
 enum MyStatus {
      NASTAT    = 0;
@@ -18,15 +22,17 @@ enum MyStatus {
 }
 
 message Status {
-        MyStatus State = 1;
+        string Motion = 1;
+        int32 Speed = 2;
+        int32 Spot = 3;
+        int32 Target = 4;
 }
 
 
 enum MyEmergency {
-     NAEMG   = 0;
-     FIRE    = 1;
-     EVAC    = 2;
-     ALLOK   = 3;
+     NA      = 0;
+     STOP    = 1;
+     ALLOK   = 2;
 }
 
 message Emergency {
@@ -40,15 +46,27 @@ service Async {
          rpc EmergencyUpdate(stream Emergency) returns (google.protobuf.Empty);
 }
 
+
+///////////////////////////////////////////////////////////////
+// CALLS
+//
 message StateQuery {
         string Squery = 1;
 }
-
 message StateResponse {
         string Sresponse = 1;
+}
+
+message TargetCommand {
+        int32 Target = 1;       
+}
+message TargetReport {
+        int32 Code = 1;
+        string Message = 2;
 }
 
 // Actor/client serves responsens to User/server's queries
 service Calls {
          rpc Send(StateQuery) returns (StateResponse);
+         rpc MoveTo(TargetCommand) returns (stream TargetReport);
 }
