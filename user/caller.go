@@ -2,28 +2,49 @@ package main
 
 import (
 	"context"
-	pb "coptest/proto"
 	"log"
 	"time"
-
+	"fmt"
+	
+	pb "coptest/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-type CallerModule struct {
+type CallerClient struct {
 	client   pb.CallsClient
+	conn *grpc.ClientConn
+
 	SendChan chan *pb.StateQuery
+	cientCtx context.Context
 }
 
-func NewCallerModule(conn grpc.ClientConnInterface) *CallerModule {
-	cm := &CallerModule{
+
+func NewCallerClient(host string, port int) *CallerClient {
+
+	var options[]grpc.DialOption
+
+	creds := grpc.WithTransportCredentials(insecure.NewCredentials())
+	options = append(options, creds)
+	
+	hostPort := fmt.Sprintf("%s:%d", host, port)
+	conn, err := grpc.NewClient(hostPort, options...)
+
+	if err != nil {
+		return nil
+	}
+	
+	cm := &CallerClient{
 		client:   pb.NewCallsClient(conn),
 		SendChan: make(chan *pb.StateQuery, 100),
 	}
+
 	go cm.process()
 	return cm
 }
 
-func (cm *CallerModule) process() {
+
+func (cm *CallerClient) process() {
 	for req := range cm.SendChan {
 		// Use a timeout for each outbound request
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

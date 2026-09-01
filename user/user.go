@@ -6,6 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	pb "coptest/proto"
 )
 
 func main() {
@@ -20,6 +22,8 @@ func main() {
 	sm := NewStateModule(10)
 	em := NewEmergencyModule()
 
+	cl := NewCallerClient("localhost", 50054)
+	
 	stop := make(chan struct{})
 
 	go func() {
@@ -40,6 +44,12 @@ func main() {
 		for {
 			time.Sleep(5 * time.Second)
 			log.Println(" .. Gettin STATUS:", sm.GetLatestState("user"))
+
+			time.Sleep(5 * time.Second)
+			log.Println(" .. __ Calling Squery:")
+			cl.SendChan <- &pb.StateQuery{
+				Squery: "Hello! It's me.",
+			}
 		}
 	}()
 
