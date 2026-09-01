@@ -15,6 +15,8 @@ func main() {
 	StartStateHandler("localhost", 50052, stop)
 	StartEmergencyHandler("localhost", 50052, stop)
 
+	mv := NewMover(100, 1.0)
+
 	go func() {
 		LaunchCallsServer(50054, stop)
 	}()
@@ -45,6 +47,8 @@ func main() {
 					if err := SendEmergencyUpdate(emergency); err != nil {
 						log.Printf("Failed to send 'emergency update': %v", err)
 					}
+
+					log.Println(mv)
 					continue
 				}
 
@@ -63,5 +67,6 @@ func main() {
 
 	}(stop)
 
+	mv.MoveTo(50)
 	select {}
 }
