@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	log.Println("Hello")
 
 	stop := make(chan struct{})
@@ -40,8 +41,7 @@ func main() {
 					log.Println("Sending emergency update")
 					emergencyOptions := []pb.MyEmergency{
 						pb.MyEmergency_ALLOK,
-						pb.MyEmergency_FIRE,
-						pb.MyEmergency_EVAC,
+						pb.MyEmergency_STOP,
 					}
 					emergency := emergencyOptions[rand.Intn(len(emergencyOptions))]
 					if err := SendEmergencyUpdate(emergency); err != nil {

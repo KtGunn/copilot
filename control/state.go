@@ -153,7 +153,10 @@ func SendUpdate(msg pb.MyStatus) error {
 	}
 
 	update := &pb.Status{
-		State: msg,
+		Motion: "mostop",
+		Speed:  3,
+		Spot:   2,
+		Target: 13,
 	}
 
 	if err := stream.Send(update); err != nil {

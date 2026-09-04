@@ -7,7 +7,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.12.4
-// source: proto/pilot.proto
+// source: pilot.proto
 
 package proto
 
@@ -151,11 +151,12 @@ var Async_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "proto/pilot.proto",
+	Metadata: "pilot.proto",
 }
 
 const (
-	Calls_Send_FullMethodName = "/sandbox.Calls/Send"
+	Calls_Send_FullMethodName   = "/sandbox.Calls/Send"
+	Calls_MoveTo_FullMethodName = "/sandbox.Calls/MoveTo"
 )
 
 // CallsClient is the client API for Calls service.
@@ -165,6 +166,7 @@ const (
 // Actor/client serves responsens to User/server's queries
 type CallsClient interface {
 	Send(ctx context.Context, in *StateQuery, opts ...grpc.CallOption) (*StateResponse, error)
+	MoveTo(ctx context.Context, in *TargetCommand, opts ...grpc.CallOption) (grpc.ServerStreamingClient[TargetReport], error)
 }
 
 type callsClient struct {
@@ -185,6 +187,25 @@ func (c *callsClient) Send(ctx context.Context, in *StateQuery, opts ...grpc.Cal
 	return out, nil
 }
 
+func (c *callsClient) MoveTo(ctx context.Context, in *TargetCommand, opts ...grpc.CallOption) (grpc.ServerStreamingClient[TargetReport], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Calls_ServiceDesc.Streams[0], Calls_MoveTo_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[TargetCommand, TargetReport]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Calls_MoveToClient = grpc.ServerStreamingClient[TargetReport]
+
 // CallsServer is the server API for Calls service.
 // All implementations must embed UnimplementedCallsServer
 // for forward compatibility.
@@ -192,6 +213,7 @@ func (c *callsClient) Send(ctx context.Context, in *StateQuery, opts ...grpc.Cal
 // Actor/client serves responsens to User/server's queries
 type CallsServer interface {
 	Send(context.Context, *StateQuery) (*StateResponse, error)
+	MoveTo(*TargetCommand, grpc.ServerStreamingServer[TargetReport]) error
 	mustEmbedUnimplementedCallsServer()
 }
 
@@ -204,6 +226,9 @@ type UnimplementedCallsServer struct{}
 
 func (UnimplementedCallsServer) Send(context.Context, *StateQuery) (*StateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
+}
+func (UnimplementedCallsServer) MoveTo(*TargetCommand, grpc.ServerStreamingServer[TargetReport]) error {
+	return status.Errorf(codes.Unimplemented, "method MoveTo not implemented")
 }
 func (UnimplementedCallsServer) mustEmbedUnimplementedCallsServer() {}
 func (UnimplementedCallsServer) testEmbeddedByValue()               {}
@@ -244,6 +269,17 @@ func _Calls_Send_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Calls_MoveTo_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(TargetCommand)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(CallsServer).MoveTo(m, &grpc.GenericServerStream[TargetCommand, TargetReport]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Calls_MoveToServer = grpc.ServerStreamingServer[TargetReport]
+
 // Calls_ServiceDesc is the grpc.ServiceDesc for Calls service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -256,6 +292,12 @@ var Calls_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Calls_Send_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/pilot.proto",
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "MoveTo",
+			Handler:       _Calls_MoveTo_Handler,
+			ServerStreams: true,
+		},
+	},
+	Metadata: "pilot.proto",
 }
