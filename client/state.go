@@ -29,7 +29,13 @@ func NewStateModule(size int) *StateModule {
 
 func (sm *StateModule) listen() {
 	for cs := range sm.StatusChan {
-		log.Println("Received status update for client:", cs.ClientID, "Status:", cs.Status.GetState())
+
+		mo := cs.Status.GetMotion()
+		spd := cs.Status.GetSpeed()
+		spot := cs.Status.GetSpot()
+		targ := cs.Status.GetTarget()
+
+		log.Println("Recd status for `", cs.ClientID, "`: ", mo, " Speed", spd, "Spot", spot, "Target", targ)
 		sm.mu.Lock()
 		sm.latest[cs.ClientID] = cs.Status
 		sm.mu.Unlock()
